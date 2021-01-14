@@ -1,0 +1,63 @@
+- name: Install packages
+  pkgng:
+    name: git,php74,php74-composer,mariadb105-client,mariadb105-server,caddy
+    state: latest
+
+- name: Add caddy user
+  user:
+    name: caddy
+
+- name: Set firewall_type
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^firewall_type='
+    line: 'firewall_type="workstation"'
+
+- name: Set firewall_myservices
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^firewall_myservices='
+    line: 'firewall_myservices="22/tcp 80/tcp 443/tcp"'
+
+- name: Set firewall_allowservices
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^firewall_allowservices="any"'
+    line: 'firewall_allowservices="any"'
+
+- name: Enable firewall
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^firewall_enable='
+    line: 'firewall_enable="YES"'
+
+- name: Set caddy_cert_email
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^caddy_cert_email='
+    line: 'caddy_cert_email="me@duckie.co"'
+
+- name: Copy files
+  synchronize:
+    src: usr/
+    dest: /usr/
+
+- name: Set caddy_config_path
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^caddy_config_path='
+    line: 'caddy_config_path="/usr/home/caddy/Caddyfile"'
+
+- name: Set caddy_user
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^caddy_user='
+    line: 'caddy_user="caddy"'
+    # I don't like running it as root, but v0.11.5 tries to create /.caddy.
+    #line: 'caddy_user="root"'
+
+- name: Enable caddy
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^caddy_enable='
+    line: 'caddy_enable="YES"'
